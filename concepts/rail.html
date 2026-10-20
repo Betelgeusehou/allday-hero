@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>All Day concept The ticket rail</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500&family=Archivo:wght@400;600&display=swap">
+<style>
+:root{--red:#94280C;--cream:#F6F1EA;--dim:#C9BDB0}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#0E0B09}
+body{font-family:Archivo,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.hero{position:relative;height:100vh;height:100svh;min-height:560px;overflow:hidden;display:flex;align-items:center}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.veil{position:absolute;inset:0;z-index:1;pointer-events:none;
+ background:linear-gradient(90deg,rgba(14,11,9,.88) 0%,rgba(14,11,9,.62) 30%,rgba(14,11,9,.08) 58%,rgba(14,11,9,0) 74%)}
+.inner{position:relative;z-index:2;width:100%;max-width:1120px;margin:0 auto;padding:0 clamp(20px,5vw,56px) 40px}
+.eyebrow{margin:0 0 14px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--dim);max-width:34ch;line-height:1.5}
+.rule{height:1px;width:88px;background:var(--red);margin:0 0 26px}
+h1{margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:clamp(2.1rem,6.3vw,4.6rem);line-height:1.03;letter-spacing:-.015em;color:var(--cream)}
+h1 span{display:block}
+.tag{position:absolute;left:0;bottom:0;z-index:4;padding:16px clamp(20px,5vw,56px);
+ font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#6B625B}
+</style></head><body>
+<section class="hero"><canvas id="c"></canvas><div class="veil"></div>
+<div class="inner">
+ <p class="eyebrow">Practical AI for restaurant operators, from a restaurant owner.</p>
+ <div class="rule"></div>
+ <h1><span>The AI I run my</span><span>restaurants with.</span></h1>
+</div>
+<div class="tag">The ticket rail</div></section>
+<script>
+var c=document.getElementById('c'),x=c.getContext('2d'),W=0,H=0;
+function fit(){var d=Math.min(window.devicePixelRatio||1,2);
+ if(c.clientWidth!==W||c.clientHeight!==H||c.width!==Math.round(c.clientWidth*d)){
+  W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);
+  x.setTransform(d,0,0,d,0,0);}}
+function ground(cx,cy,warm){var g=x.createRadialGradient(W*cx,H*cy,0,W*cx,H*cy,W*0.78);
+ g.addColorStop(0,warm);g.addColorStop(0.55,'#1a1310');g.addColorStop(1,'#0E0B09');
+ x.fillStyle=g;x.fillRect(0,0,W,H);}
+
+function draw(t){
+  ground(0.70,0.38,'#2b1d15');
+  var railY=H*0.22, zone=W*0.60, fadeW=W*0.14;
+
+  x.strokeStyle='rgba(201,189,176,.20)';x.lineWidth=2;
+  x.beginPath();x.moveTo(W*0.46,railY);x.lineTo(W*1.02,railY);x.stroke();
+
+  var n=9, loopW=W*0.78, speed=W*0.052;
+  for(var i=0;i<n;i++){
+    var seed=i*2.399;
+    var px=W*1.06-(((t*speed)+i*(loopW/n))%(loopW+W*0.30));
+    if(px<W*0.40) continue;
+    var fade=Math.min(1,Math.max(0,(px-zone)/fadeW));
+    var w=W*0.072,h=w*1.42;
+    x.save();
+    x.globalAlpha=0.12+0.88*fade;
+    x.translate(px,railY+h*0.55+Math.sin(seed)*7);
+    x.rotate(Math.sin(seed*1.7)*0.055);
+    x.fillStyle='rgba(0,0,0,.45)';x.fillRect(-w/2+3,-h/2+4,w,h);
+    x.fillStyle='#F1E8DC';x.fillRect(-w/2,-h/2,w,h);
+    x.fillStyle='rgba(27,22,19,.10)';x.fillRect(-w/2,-h/2,w,4);
+    x.fillStyle='rgba(27,22,19,.52)';
+    for(var L=0;L<5;L++){
+      var lw=w*(0.74-((i+L)%3)*0.15);
+      x.fillRect(-w/2+w*0.13,-h/2+h*0.21+L*(h*0.132),lw,2.4);
+    }
+    x.restore();
+  }
+
+  // what the paper turns into: marks falling to one steady line
+  var lineY=H*0.78;
+  for(var k=0;k<22;k++){
+    var ph=((t*0.33)+k*0.0455)%1;
+    var sx=zone-fadeW*0.4+Math.sin(k*5.1)*W*0.035;
+    var sy=railY+H*0.14;
+    var ex=W*0.56+((k*37)%100)/100*W*0.36;
+    var ey=lineY-10;
+    var e=ph*ph*(3-2*ph);
+    var a=Math.sin(ph*Math.PI);
+    x.globalAlpha=a*0.85;
+    x.fillStyle='#E8903C';
+    x.beginPath();x.arc(sx+(ex-sx)*e,sy+(ey-sy)*e,1.9,0,6.2832);x.fill();
+  }
+  x.globalAlpha=1;
+
+  x.fillStyle='rgba(148,40,12,.95)';x.fillRect(W*0.52,lineY,W*0.42,1.5);
+  x.font='600 12px Archivo, Arial';x.fillStyle='rgba(246,241,234,.80)';
+  x.letterSpacing='2.4px';
+  x.fillText('LABOR     COVERS     WASTE     FLAGGED',W*0.52,lineY+24);
+}
+
+function loop(ts){fit();draw(ts/1000);requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+</script></body></html>

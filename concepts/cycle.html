@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>All Day concept The money cycle</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500&family=Archivo:wght@400;600&display=swap">
+<style>
+:root{--red:#94280C;--cream:#F6F1EA;--dim:#C9BDB0}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#0E0B09}
+body{font-family:Archivo,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.hero{position:relative;height:100vh;height:100svh;min-height:560px;overflow:hidden;display:flex;align-items:center}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.veil{position:absolute;inset:0;z-index:1;pointer-events:none;
+ background:linear-gradient(90deg,rgba(14,11,9,.88) 0%,rgba(14,11,9,.62) 30%,rgba(14,11,9,.08) 58%,rgba(14,11,9,0) 74%)}
+.inner{position:relative;z-index:2;width:100%;max-width:1120px;margin:0 auto;padding:0 clamp(20px,5vw,56px) 40px}
+.eyebrow{margin:0 0 14px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--dim);max-width:34ch;line-height:1.5}
+.rule{height:1px;width:88px;background:var(--red);margin:0 0 26px}
+h1{margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:clamp(2.1rem,6.3vw,4.6rem);line-height:1.03;letter-spacing:-.015em;color:var(--cream)}
+h1 span{display:block}
+.tag{position:absolute;left:0;bottom:0;z-index:4;padding:16px clamp(20px,5vw,56px);
+ font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#6B625B}
+</style></head><body>
+<section class="hero"><canvas id="c"></canvas><div class="veil"></div>
+<div class="inner">
+ <p class="eyebrow">Practical AI for restaurant operators, from a restaurant owner.</p>
+ <div class="rule"></div>
+ <h1><span>The AI I run my</span><span>restaurants with.</span></h1>
+</div>
+<div class="tag">The money cycle</div></section>
+<script>
+var c=document.getElementById('c'),x=c.getContext('2d'),W=0,H=0;
+function fit(){var d=Math.min(window.devicePixelRatio||1,2);
+ if(c.clientWidth!==W||c.clientHeight!==H||c.width!==Math.round(c.clientWidth*d)){
+  W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);
+  x.setTransform(d,0,0,d,0,0);}}
+function ground(cx,cy,warm){var g=x.createRadialGradient(W*cx,H*cy,0,W*cx,H*cy,W*0.78);
+ g.addColorStop(0,warm);g.addColorStop(0.55,'#1a1310');g.addColorStop(1,'#0E0B09');
+ x.fillStyle=g;x.fillRect(0,0,W,H);}
+
+var NODES=[['FOOD',-74],['LIQUOR',-28],['LABOR',20],['FIXED',66]];
+var P=[],last=0,spawnAcc=0,core=0.35;
+function draw(tm){
+  var dt=Math.min(0.05,tm-last||0.016);last=tm;
+  ground(0.70,0.46,'#2d1d14');
+  var cx=W*0.705,cy=H*0.455,R=Math.min(W,H)*0.34;
+  var gx=W*0.455,lx=W*0.60,ly=H*1.10;
+
+  // where the money goes
+  x.font='600 10px Archivo, Arial';x.letterSpacing='2.2px';x.lineWidth=1;
+  for(var i=0;i<NODES.length;i++){
+    var a=NODES[i][1]*Math.PI/180,nx=cx+Math.cos(a)*R,ny=cy+Math.sin(a)*R;
+    x.strokeStyle='rgba(201,189,176,.07)';
+    x.beginPath();x.moveTo(cx,cy);x.lineTo(nx,ny);x.stroke();
+    x.strokeStyle='rgba(201,189,176,.26)';
+    x.beginPath();x.arc(nx,ny,12,0,6.2832);x.stroke();
+    x.fillStyle='rgba(201,189,176,.52)';x.fillText(NODES[i][0],nx+19,ny+4);
+  }
+  // guests in
+  x.strokeStyle='rgba(201,189,176,.07)';
+  x.beginPath();x.moveTo(gx,cy);x.lineTo(cx,cy);x.stroke();
+  x.fillStyle='rgba(201,189,176,.52)';x.fillText('GUESTS',gx-4,cy-18);
+  // the leak
+  x.fillStyle='rgba(201,189,176,.40)';x.fillText('LEAK',lx-6,H*0.955);
+
+  spawnAcc+=dt;
+  while(spawnAcc>0.17){spawnAcc-=0.17;
+    P.push({p:0,ph:0,n:(Math.random()*4)|0,leak:Math.random()<0.34,
+            off:(Math.random()-0.5)*H*0.30,ring:0,sv:0});}
+
+  for(var k=P.length-1;k>=0;k--){
+    var q=P[k],px,py,col,rad=2.4;
+    if(q.ph===0){                               // guest walking in
+      q.p+=dt*0.42; px=gx+(cx-gx)*q.p; py=cy+q.off*(1-q.p);
+      col='rgba(246,241,234,.80)';rad=2.0;
+      if(q.p>=1){q.ph=1;q.p=0;core=Math.min(1,core+0.012);}
+    } else if(q.ph===1){                        // a ticket turns into money
+      q.p+=dt*1.7;
+      if(q.p>=1){q.ph=q.leak?3:2;q.p=0;}
+      px=cx;py=cy;col='rgba(232,144,60,.95)';rad=2.4+q.p*2;
+    } else if(q.ph===2){                        // out to a vendor
+      q.p+=dt*0.38;
+      var a2=NODES[q.n][1]*Math.PI/180;
+      px=cx+Math.cos(a2)*R*q.p;py=cy+Math.sin(a2)*R*q.p;
+      col='rgba(232,144,60,'+(0.9-q.p*0.45)+')';
+      if(q.p>=1){P.splice(k,1);continue;}
+    } else if(q.ph===3){                        // falling away
+      q.p+=dt*0.30;
+      px=cx+(lx-cx)*q.p;py=cy+(ly-cy)*q.p*q.p;
+      col='rgba(200,92,40,'+(0.85-q.p*0.3)+')';
+      if(q.p>0.16&&q.p<0.62&&q.sv===0&&Math.random()<dt*2.6){q.sv=1;q.ring=1;q.ph=4;q.p=0;q.sx=px;q.sy=py;}
+      else if(q.p>=1){P.splice(k,1);continue;}
+    } else {                                    // caught, and sent back
+      q.p+=dt*0.52;q.ring=Math.max(0,q.ring-dt*1.6);
+      var e=q.p*q.p*(3-2*q.p);
+      px=q.sx+(cx-q.sx)*e;py=q.sy+(cy-q.sy)*e-Math.sin(q.p*3.14)*H*0.07;
+      col='rgba(246,241,234,.95)';rad=2.8;
+      if(q.p>=1){core=Math.min(1.25,core+0.05);P.splice(k,1);continue;}
+    }
+    if(q.ring>0){
+      x.strokeStyle='rgba(246,241,234,'+(q.ring*0.9)+')';x.lineWidth=1.3;
+      x.beginPath();x.arc(px,py,9+(1-q.ring)*13,0,6.2832);x.stroke();
+    }
+    x.fillStyle=col;x.beginPath();x.arc(px,py,rad,0,6.2832);x.fill();
+  }
+
+  core=Math.max(0.35,core-dt*0.07);
+  var g2=x.createRadialGradient(cx,cy,0,cx,cy,R*0.60);
+  g2.addColorStop(0,'rgba(255,214,150,'+(0.50*core)+')');
+  g2.addColorStop(0.45,'rgba(232,144,60,'+(0.20*core)+')');
+  g2.addColorStop(1,'rgba(232,144,60,0)');
+  x.fillStyle=g2;x.beginPath();x.arc(cx,cy,R*0.60,0,6.2832);x.fill();
+  x.strokeStyle='rgba(246,241,234,.55)';x.lineWidth=1.6;
+  x.beginPath();x.arc(cx,cy,17,0,6.2832);x.stroke();
+  x.fillStyle='rgba(246,241,234,.68)';x.fillText('THE HOUSE',cx-30,cy+40);
+}
+
+function loop(ts){fit();draw(ts/1000);requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+</script></body></html>

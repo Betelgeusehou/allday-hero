@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>All Day concept The room fills</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500&family=Archivo:wght@400;600&display=swap">
+<style>
+:root{--red:#94280C;--cream:#F6F1EA;--dim:#C9BDB0}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#0E0B09}
+body{font-family:Archivo,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.hero{position:relative;height:100vh;height:100svh;min-height:560px;overflow:hidden;display:flex;align-items:center}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.veil{position:absolute;inset:0;z-index:1;pointer-events:none;
+ background:linear-gradient(90deg,rgba(14,11,9,.88) 0%,rgba(14,11,9,.62) 30%,rgba(14,11,9,.08) 58%,rgba(14,11,9,0) 74%)}
+.inner{position:relative;z-index:2;width:100%;max-width:1120px;margin:0 auto;padding:0 clamp(20px,5vw,56px) 40px}
+.eyebrow{margin:0 0 14px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--dim);max-width:34ch;line-height:1.5}
+.rule{height:1px;width:88px;background:var(--red);margin:0 0 26px}
+h1{margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:clamp(2.1rem,6.3vw,4.6rem);line-height:1.03;letter-spacing:-.015em;color:var(--cream)}
+h1 span{display:block}
+.tag{position:absolute;left:0;bottom:0;z-index:4;padding:16px clamp(20px,5vw,56px);
+ font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#6B625B}
+</style></head><body>
+<section class="hero"><canvas id="c"></canvas><div class="veil"></div>
+<div class="inner">
+ <p class="eyebrow">Practical AI for restaurant operators, from a restaurant owner.</p>
+ <div class="rule"></div>
+ <h1><span>The AI I run my</span><span>restaurants with.</span></h1>
+</div>
+<div class="tag">The room fills</div></section>
+<script>
+var c=document.getElementById('c'),x=c.getContext('2d'),W=0,H=0;
+function fit(){var d=Math.min(window.devicePixelRatio||1,2);
+ if(c.clientWidth!==W||c.clientHeight!==H||c.width!==Math.round(c.clientWidth*d)){
+  W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);
+  x.setTransform(d,0,0,d,0,0);}}
+function ground(cx,cy,warm){var g=x.createRadialGradient(W*cx,H*cy,0,W*cx,H*cy,W*0.78);
+ g.addColorStop(0,warm);g.addColorStop(0.55,'#1a1310');g.addColorStop(1,'#0E0B09');
+ x.fillStyle=g;x.fillRect(0,0,W,H);}
+
+var TB=[[0.56,0.26,0],[0.66,0.20,1],[0.77,0.26,0],[0.87,0.21,1],
+        [0.53,0.44,1],[0.63,0.40,0],[0.74,0.45,1],[0.85,0.40,0],
+        [0.58,0.60,0],[0.69,0.63,1],[0.80,0.59,0],[0.90,0.64,1],
+        [0.62,0.78,1],[0.75,0.80,0],[0.87,0.78,1]];
+var ORDER=[5,1,9,13,0,6,3,10,8,14,2,12,4,11,7];
+function draw(t){
+  ground(0.72,0.48,'#2a1c14');
+  var cyc=(t*0.055)%1.35, fill=Math.min(TB.length,Math.floor(cyc*TB.length));
+
+  // room shell and bar
+  x.strokeStyle='rgba(201,189,176,.26)';x.lineWidth=1.4;
+  x.beginPath();
+  x.moveTo(W*0.47,H*0.11);x.lineTo(W*0.97,H*0.11);x.lineTo(W*0.97,H*0.92);
+  x.lineTo(W*0.56,H*0.92);x.lineTo(W*0.56,H*0.70);x.lineTo(W*0.47,H*0.70);
+  x.closePath();x.stroke();
+  x.strokeStyle='rgba(201,189,176,.34)';x.lineWidth=5;
+  x.beginPath();x.moveTo(W*0.50,H*0.145);x.lineTo(W*0.50,H*0.66);x.stroke();
+  x.font='600 10px Archivo, Arial';x.letterSpacing='2.2px';
+  x.fillStyle='rgba(201,189,176,.42)';
+  x.save();x.translate(W*0.485,H*0.44);x.rotate(-Math.PI/2);x.fillText('BAR',0,0);x.restore();
+
+  var seated=0;
+  for(var o=0;o<TB.length;o++){
+    var i=ORDER[o], T=TB[i], px=W*T[0], py=H*T[1], round=T[2]===0;
+    var on=o<fill, r=Math.min(W,H)*0.030;
+    if(on){
+      seated++;
+      var g=x.createRadialGradient(px,py,0,px,py,r*4.2);
+      g.addColorStop(0,'rgba(232,144,60,.42)');g.addColorStop(1,'rgba(232,144,60,0)');
+      x.fillStyle=g;x.beginPath();x.arc(px,py,r*4.2,0,6.2832);x.fill();
+    }
+    x.strokeStyle=on?'rgba(246,241,234,.80)':'rgba(201,189,176,.26)';
+    x.lineWidth=1.4;
+    x.beginPath();
+    if(round){x.arc(px,py,r,0,6.2832);} else {x.rect(px-r*1.25,py-r*0.82,r*2.5,r*1.64);}
+    x.stroke();
+    var seats=round?4:4;
+    for(var s=0;s<seats;s++){
+      var a=(s/seats)*6.2832+(round?0.78:0.0);
+      var sx=px+Math.cos(a)*r*1.95, sy=py+Math.sin(a)*r*1.95;
+      x.fillStyle=on?'rgba(246,241,234,.92)':'rgba(201,189,176,.20)';
+      x.beginPath();x.arc(sx,sy,on?3.1:2.2,0,6.2832);x.fill();
+    }
+  }
+  x.font='600 12px Archivo, Arial';x.letterSpacing='2.4px';
+  x.fillStyle='rgba(246,241,234,.72)';
+  x.fillText(seated+' OF '+TB.length+' TABLES SEATED',W*0.56,H*0.975);
+}
+
+function loop(ts){fit();draw(ts/1000);requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+</script></body></html>
